@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo de Inyección SQL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .vulnerable {
+            border-left: 5px solid #ff4444;
+        }
+        .secure {
+            border-left: 5px solid #44ff44;
+        }
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .flash-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .flash-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>Demostración de Inyección SQL</h1>
+    
+    {% if session.get('logged_in') %}
+    <div class="nav">
+        <a href="{{ url_for('dashboard') }}" class="btn">Dashboard</a>
+        <a href="{{ url_for('logout') }}" class="btn">Cerrar sesión</a>
+    </div>
+    {% endif %}
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <div class="container vulnerable">
+        <h2>Métodos Vulnerables a Inyección SQL</h2>
+        <p>Estas páginas contienen vulnerabilidades de inyección SQL deliberadas para fines educativos.</p>
+        
+        <h3>Método 1: Login Vulnerable</h3>
+        <p>Esta página de login es vulnerable a inyección SQL porque concatena directamente la entrada del usuario en la consulta SQL.</p>
+        <p><strong>Ejemplo de ataque:</strong> Ingresa <code>' OR '1'='1</code> como nombre de usuario y cualquier contraseña.</p>
+        <a href="{{ url_for('login_vulnerable') }}" class="btn btn-danger">Ir al Login Vulnerable</a>
+        
+        <h3>Método 2: Búsqueda Vulnerable</h3>
+        <p>Esta página de búsqueda es vulnerable a inyección SQL porque concatena directamente la entrada del usuario en la consulta SQL.</p>
+        <p><strong>Ejemplo de ataque:</strong> Ingresa <code>' OR '1'='1</code> para ver todos los usuarios o <code>' UNION SELECT 1,2,3,4 --</code> para probar ataques de unión.</p>
+        <a href="{{ url_for('search_vulnerable') }}" class="btn btn-danger">Ir a la Búsqueda Vulnerable</a>
+    </div>
+    
+    <div class="container secure">
+        <h2>Método Seguro contra Inyección SQL</h2>
+        <p>Esta página utiliza consultas parametrizadas para prevenir ataques de inyección SQL.</p>
+        <a href="{{ url_for('login_secure') }}" class="btn btn-success">Ir al Login Seguro</a>
+    </div>
+    
+    <div class="container">
+        <h2>Información de Usuarios para Pruebas</h2>
+        <p>Puedes usar estas credenciales para probar el login normal:</p>
+        <ul>
+            <li>Usuario: admin, Contraseña: admin123</li>
+            <li>Usuario: user1, Contraseña: password1</li>
+            <li>Usuario: user2, Contraseña: password2</li>
+        </ul>
+    </div>
+</body>
+</html>

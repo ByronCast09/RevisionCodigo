@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Demo de Inyección SQL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .flash-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .user-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('index') }}" class="btn">Inicio</a>
+        <a href="{{ url_for('logout') }}" class="btn">Cerrar sesión</a>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <h1>Dashboard</h1>
+    
+    <div class="container">
+        <h2>¡Bienvenido, {{ session.username }}!</h2>
+        
+        <div class="user-info">
+            <h3>Información de usuario</h3>
+            <p><strong>Usuario:</strong> {{ session.username }}</p>
+            <p><strong>Rol:</strong> {{ session.role }}</p>
+        </div>
+        
+        <h3>Demostración de Inyección SQL</h3>
+        <p>Has iniciado sesión correctamente. Esto significa que:</p>
+        <ul>
+            <li>Si usaste credenciales normales, el sistema funcionó como se esperaba.</li>
+            <li>Si usaste una inyección SQL en la página vulnerable, pudiste eludir la autenticación.</li>
+            <li>Si intentaste una inyección SQL en la página segura, no debería haber funcionado.</li>
+        </ul>
+        
+        <p>Puedes seguir explorando las diferentes páginas para probar más ejemplos de inyección SQL.</p>
+    </div>
+</body>
+</html>

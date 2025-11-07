@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda Vulnerable - Demo de Inyección SQL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .vulnerable {
+            border-left: 5px solid #ff4444;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .error {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+        .nav {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('index') }}" class="btn">Volver al Inicio</a>
+    </div>
+    
+    <h1>Búsqueda de Usuarios Vulnerable a Inyección SQL</h1>
+    
+    <div class="container vulnerable">
+        <h2>¡Advertencia! Esta página es vulnerable</h2>
+        <p>Esta página de búsqueda es deliberadamente vulnerable a ataques de inyección SQL para fines educativos.</p>
+        
+        <div class="code">
+            <pre>query = f"SELECT id, username, email, role FROM users WHERE username LIKE '%{search_term}%' OR email LIKE '%{search_term}%'"</pre>
+        </div>
+        
+        <h3>Ejemplos de ataques:</h3>
+        <ul>
+            <li><strong>Ver todos los usuarios:</strong> Ingresa <code>' OR '1'='1</code> en el campo de búsqueda.</li>
+            <li><strong>Ataque UNION:</strong> Ingresa <code>' UNION SELECT 1,2,3,4 --</code> para probar la estructura de la tabla.</li>
+        </ul>
+        
+        {% if error %}
+        <div class="error">
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            <div class="form-group">
+                <label for="search_term">Buscar usuarios:</label>
+                <input type="text" id="search_term" name="search_term" placeholder="Ingrese nombre de usuario o email" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Buscar (Vulnerable)</button>
+        </form>
+        
+        {% if results %}
+        <h3>Resultados de la búsqueda:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in results %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</body>
+</html>

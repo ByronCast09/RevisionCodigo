@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Vulnerable - Demo de Inyección SQL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .vulnerable {
+            border-left: 5px solid #ff4444;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .error {
+            color: #dc3545;
+            margin-bottom: 15px;
+        }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+        .nav {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('index') }}" class="btn">Volver al Inicio</a>
+    </div>
+    
+    <h1>Login Vulnerable a Inyección SQL</h1>
+    
+    <div class="container vulnerable">
+        <h2> Esta página es vulnerable</h2>
+        <p>Esta página de login es deliberadamente vulnerable a ataques de inyección SQL.</p>
+        
+        <div class="code">
+            <pre>query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"</pre>
+        </div>
+        
+        <h3>Ejemplos de ataques:</h3>
+        <ul>
+            <li> Ingresa <code>' OR '1'='1</code> como nombre de usuario y cualquier contraseña.</li>
+            <li>Ingresa <code>admin' --</code> como nombre de usuario (omite la contraseña).</li>
+        </ul>
+        
+        {% if error %}
+        <div class="error">
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            <div class="form-group">
+                <label for="username">Nombre de usuario:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Iniciar sesión (Vulnerable)</button>
+        </form>
+    </div>
+</body>
+</html>
